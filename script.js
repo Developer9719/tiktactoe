@@ -13,3 +13,22 @@
  * 2. Store players as objects with properties like name and symbol (X or O).
  * 3. Store the game flow as an object with properties like currentPlayer and gameStatus.
  */
+
+(function() { // IIFE for game board module
+    const board = [ // Game board array
+        ['', '', ''],
+        ['', '', ''],
+        ['', '', '']
+    ];
+})();
+
+function createPlayer(name, symbol) { // Player factory function
+    return {
+        name: name,
+        symbol: symbol
+    };
+}
+
+// Create the player objects
+const player1 = createPlayer('Player 1', 'X');
+const player2 = createPlayer('Player 2', 'O');
