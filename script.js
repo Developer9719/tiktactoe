@@ -28,5 +28,21 @@
         const render = () => {
             renderElement.innerHTML = ""; // Clear previous content
 
+            gameboard.forEach((symbol, index) => {
+                const cell = document.createElement('div'); // For each element in the array, create a div.
+                // This creates 9 divs.
+
+                cell.classList.add('cell'); // Add a cell class to each div.
+                cell.dataset.index = index; // Add a data-index attribute to each div with the index of the array.
+                cell.textContent = symbol; // Set the text content of the div to the symbol (X or O).
+
+                renderElement.appendChild(cell); // Append the div to the gameboard element in the HTML.
+            });
+        }
+
+        return {
+            render
+        }
+
     })(); // Immediately invoked function expression
 })()
