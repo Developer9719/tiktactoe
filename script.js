@@ -40,9 +40,5 @@
             });
         }
 
-        return {
-            render
-        }
-
     })(); // Immediately invoked function expression
 })()
