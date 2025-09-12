@@ -21,11 +21,13 @@
     }
 
     const gameBoardModule = (function() { // IIFE
+        // The IIFE creates all variables and functions inside it but does not run the functions.
+        // This means that the variables and functions are private and cannot be accessed from outside the IIFE.
         let gameboard = ["", "", "", "", "", "", "", "", ""];
 
         // Renders gameboard to website 
         const renderElement = document.getElementById('gameboard');
-        const render = () => {
+        const render = () => { // Arrow function syntax defines a function
             renderElement.innerHTML = ""; // Clear previous content
 
             gameboard.forEach((symbol, index) => {
@@ -40,5 +42,61 @@
             });
         }
 
+        const updateCell = (index, symbol) => { // Arrow function syntax defines a function
+            if (gameboard[index] === "") { // If the cell is empty
+                gameboard[index] = symbol;
+                return true; // Return true if the cell was updated
+            } else {
+                return false; // Return false if the cell was not updated
+            }
+        }
+
+        const getboard = () => gameboard; // Arrow function syntax defines a function
+
+        const reset = () => { // Arrow function syntax defines a function
+            gameboard = ["", "", "", "", "", "", "", "", ""]; // Reset the gameboard array
+        }
+
+        return {
+            render,
+            updateCell,
+            getboard,
+            reset
+        }
+        /**
+         * The return statement is not the same as calling render(); It just makes the function available 
+         * outside the IIFE to be called later.
+         * 
+         * The functions and variables inside the IIFE are private and cannot be accessed from outside the IIFE.
+         * The return statement creates a public interface for the IIFE.
+         */
+
     })(); // Immediately invoked function expression
-})()
+
+    const gameController = (function() { // IIFE
+        const playerX = player("Player X", "X");
+        const playerO = player("Player O", "O");
+        let currentPlayer = playerX;
+        let gameOver = false;
+        const statusMessage = document.getElementById('status-message');
+        
+        const winningCombinations = [
+            // Rows
+            [0, 1, 2],
+            [3, 4, 5],
+            [6, 7, 8],
+            // Columns
+            [0, 3, 6],
+            [1, 4, 7],
+            [2, 5, 8],
+            // Diagonals
+            [0, 4, 8],
+            [2, 4, 6]
+        ];
+
+        const handleCellClick = (event) => {
+            
+        }
+    })(); // Immediately invoked function expression
+
+})();

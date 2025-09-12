@@ -1,0 +1,87 @@
+:root {
+    --bg-color: #1a1a2e;
+    --main-color: #16213e;
+    --accent-color: #e94560;
+    --text-color: #f0f0f0;
+    --board-color: #0f3460;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    text-align: center;
+    flex-direction: column;
+}
+
+.container {
+    background-color: var(--main-color);
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: var(--box-shadow);
+    max-width: 90%;
+    width: 400px;
+}
+
+#status-message {
+    margin-bottom: 2rem;
+    font-size: 1.25rem;
+    min-height: 1.5rem;
+}
+
+#gameboard {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    width: 100%;
+}
+
+.cell {
+    background-color: var(--board-color);
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 4rem;
+    font-weight: 700;
+    cursor: pointer;
+    user-select: none;
+    border-radius: 0.5rem;
+    transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+}
+
+.cell:hover {
+    transform: scale(1.05);
+}
+
+.cell.x {
+    color: #4CAF50; /* A green color for X */
+}
+
+.cell.o {
+    color: #2196F3; /* A blue color for O */
+}
+
+#restart-btn {
+    background-color: var(--accent-color);
+    color: var(--text-color);
+    border: none;
+    padding: 0.75rem 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    border-radius: 9999px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.2);
+}
+
+#restart-btn:hover {
+    background-color: #c9344d;
+}
