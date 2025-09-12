@@ -94,7 +94,11 @@
             [2, 4, 6]
         ];
 
-        const handleCellClick = (event) => {
+        const handleCellClick = (event) => { // Arrow function syntax defines a function
+        // (event) represents the event that triggered the function
+        if (gameOver) return; // If the gameOver is true, the return statement stops the function from running.
+
+        const index = event.target.dataset.index; // Get the index of the clicked cell from the data-index attribute
             
         }
     })(); // Immediately invoked function expression
