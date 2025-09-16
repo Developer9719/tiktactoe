@@ -1,106 +1,133 @@
-/**
- * Pseudo code for a simple Tic Tac Toe game
- * 
- * Goal: Have as little global code as possible.
- * - Use factory functions
- * - Put the factories in IIFEs if there only needed once
- * - Everything needs to be inside one of the objects
- * - Focus on playing the game in the console before adding the UI
- *   - Create a new object to handle the UI
- *   - Add user input for player names, start and restart buttons and a results screen
- * 
- * 1. Create a 3x3 grid for the game board in an array inside an object.
- * 2. Store players as objects with properties like name and symbol (X or O).
- * 3. Store the game flow as an object with properties like currentPlayer and gameStatus.
- */
+// Use an Immediately Invoked Function Expression (IIFE) to create a private scope for all the game code.
+// This prevents variables from polluting the global window object.
+(function() {
+    // A factory function for creating player objects.
+    // It returns an object with methods and properties, but it doesn't need 'new'.
+    const Player = (name, mark) => {
+        return { name, mark };
+    };
 
-// IIFE
-(function() { // Creates a private scope for all code inside it
-    const player = (name, symbol) => { // Creates and returns a player object
-        return { name, symbol };
-    }
-
-    const gameBoardModule = (function() { // IIFE
-        // The IIFE creates all variables and functions inside it but does not run the functions.
-        // This means that the variables and functions are private and cannot be accessed from outside the IIFE.
+    // An IIFE module for managing the game board's state and rendering.
+    // It encapsulates the board data and functions that operate on it.
+    const gameboardModule = (function() {
         let gameboard = ["", "", "", "", "", "", "", "", ""];
+        const gameboardElement = document.getElementById("gameboard");
 
-        // Renders gameboard to website 
-        const renderElement = document.getElementById('gameboard');
-        const render = () => { // Arrow function syntax defines a function
-            renderElement.innerHTML = ""; // Clear previous content
-
-            gameboard.forEach((symbol, index) => {
-                const cell = document.createElement('div'); // For each element in the array, create a div.
-                // This creates 9 divs.
-
-                cell.classList.add('cell'); // Add a cell class to each div.
-                cell.dataset.index = index; // Add a data-index attribute to each div with the index of the array.
-                cell.textContent = symbol; // Set the text content of the div to the symbol (X or O).
-
-                renderElement.appendChild(cell); // Append the div to the gameboard element in the HTML.
+        const render = () => {
+            gameboardElement.innerHTML = "";
+            gameboard.forEach((mark, index) => {
+                const cell = document.createElement("div");
+                cell.classList.add("cell");
+                cell.dataset.index = index;
+                cell.textContent = mark;
+                // Add class to change the color of the mark
+                if (mark === "X") {
+                    cell.classList.add("x");
+                } else if (mark === "O") {
+                    cell.classList.add("o");
+                }
+                gameboardElement.appendChild(cell);
             });
-        }
+        };
 
-        const updateCell = (index, symbol) => { // Arrow function syntax defines a function
-            if (gameboard[index] === "") { // If the cell is empty
-                gameboard[index] = symbol;
-                return true; // Return true if the cell was updated
-            } else {
-                return false; // Return false if the cell was not updated
+        const updateCell = (index, mark) => {
+            if (gameboard[index] === "") {
+                gameboard[index] = mark;
+                return true;
             }
-        }
+            return false;
+        };
 
-        const getboard = () => gameboard; // Arrow function syntax defines a function
+        const getBoard = () => gameboard;
 
-        const reset = () => { // Arrow function syntax defines a function
-            gameboard = ["", "", "", "", "", "", "", "", ""]; // Reset the gameboard array
-        }
+        const reset = () => {
+            gameboard = ["", "", "", "", "", "", "", "", ""];
+        };
 
         return {
             render,
             updateCell,
-            getboard,
+            getBoard,
             reset
-        }
-        /**
-         * The return statement is not the same as calling render(); It just makes the function available 
-         * outside the IIFE to be called later.
-         * 
-         * The functions and variables inside the IIFE are private and cannot be accessed from outside the IIFE.
-         * The return statement creates a public interface for the IIFE.
-         */
+        };
+    })();
 
-    })(); // Immediately invoked function expression
-
-    const gameController = (function() { // IIFE
-        const playerX = player("Player X", "X");
-        const playerO = player("Player O", "O");
+    // An IIFE module to control the main game flow.
+    // It handles turns, win conditions, and UI updates.
+    const gameController = (function() {
+        const playerX = Player("Player X", "X");
+        const playerO = Player("Player O", "O");
         let currentPlayer = playerX;
         let gameOver = false;
-        const statusMessage = document.getElementById('status-message');
-        
+        const statusMessage = document.getElementById("status-message");
+
         const winningCombinations = [
-            // Rows
-            [0, 1, 2],
-            [3, 4, 5],
-            [6, 7, 8],
-            // Columns
-            [0, 3, 6],
-            [1, 4, 7],
-            [2, 5, 8],
-            // Diagonals
-            [0, 4, 8],
-            [2, 4, 6]
+            [0, 1, 2], [3, 4, 5], [6, 7, 8], // Rows
+            [0, 3, 6], [1, 4, 7], [2, 5, 8], // Columns
+            [0, 4, 8], [2, 4, 6]             // Diagonals
         ];
 
-        const handleCellClick = (event) => { // Arrow function syntax defines a function
-        // (event) represents the event that triggered the function
-        if (gameOver) return; // If the gameOver is true, the return statement stops the function from running.
+        const handleCellClick = (e) => {
+            if (gameOver) return;
 
-        const index = event.target.dataset.index; // Get the index of the clicked cell from the data-index attribute
-            
-        }
-    })(); // Immediately invoked function expression
+            const index = e.target.dataset.index;
+            if (gameboardModule.updateCell(index, currentPlayer.mark)) {
+                gameboardModule.render();
+                
+                if (checkForWin()) {
+                    statusMessage.textContent = `${currentPlayer.name} wins!`;
+                    gameOver = true;
+                } else if (checkForTie()) {
+                    statusMessage.textContent = "It's a tie!";
+                    gameOver = true;
+                } else {
+                    switchTurn();
+                }
+            }
+        };
 
+        const switchTurn = () => {
+            currentPlayer = currentPlayer === playerX ? playerO : playerX;
+            statusMessage.textContent = `${currentPlayer.name}'s turn`;
+        };
+
+        const checkForWin = () => {
+            const board = gameboardModule.getBoard();
+            return winningCombinations.some(combination => {
+                return combination.every(index => board[index] === currentPlayer.mark);
+            });
+        };
+
+        const checkForTie = () => {
+            const board = gameboardModule.getBoard();
+            return board.every(cell => cell !== "");
+        };
+
+        const restartGame = () => {
+            gameboardModule.reset();
+            gameboardModule.render();
+            currentPlayer = playerX;
+            gameOver = false;
+            statusMessage.textContent = `${currentPlayer.name}'s turn`;
+        };
+
+        const setupEventListeners = () => {
+            document.getElementById("gameboard").addEventListener("click", handleCellClick);
+            document.getElementById("restart-btn").addEventListener("click", restartGame);
+        };
+
+        // The init function is called at the very beginning to start the game.
+        const init = () => {
+            gameboardModule.render();
+            setupEventListeners();
+        };
+
+        // The return statement exposes the `init` function to the outside world.
+        return {
+            init
+        };
+    })();
+
+    // Start the game by calling the exposed `init` function.
+    gameController.init();
 })();
