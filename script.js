@@ -1,26 +1,34 @@
-// Use an Immediately Invoked Function Expression (IIFE) to create a private scope for all the game code.
-// This prevents variables from polluting the global window object.
-(function() {
-    // A factory function for creating player objects.
-    // It returns an object with methods and properties, but it doesn't need 'new'.
+// IFEE - Immediately Invoked Function Expression
+// Executes immediately after it's defined
+(function() {  
+    // Factory Function to create and return objects
+    // Takes in name and mark parameters to use as object properties
+    // Calling: const playerX = Player("Player X", "X");
+    /**
+     * const player1 = {
+     *  name: "Player X",
+     *  mark: "X"
+     * } - This is a literal object definition
+     */
     const Player = (name, mark) => {
         return { name, mark };
     };
-
-    // An IIFE module for managing the game board's state and rendering.
-    // It encapsulates the board data and functions that operate on it.
+    // Nested IIFE
     const gameboardModule = (function() {
-        let gameboard = ["", "", "", "", "", "", "", "", ""];
-        const gameboardElement = document.getElementById("gameboard");
+        let gameboard = ["", "", "", "", "", "", "", "", ""]; // Defines an array with 9 elements
+        const gameboardElement = document.getElementById("gameboard"); // Gets the gameboard element from the DOM
 
-        const render = () => {
+        // Render function
+        // Has the same format as a factory function but is not a factory function because it does not 
+        // return an object.
+        const render = () => { 
             gameboardElement.innerHTML = "";
             gameboard.forEach((mark, index) => {
                 const cell = document.createElement("div");
                 cell.classList.add("cell");
                 cell.dataset.index = index;
                 cell.textContent = mark;
-                // Add class to change the color of the mark
+                
                 if (mark === "X") {
                     cell.classList.add("x");
                 } else if (mark === "O") {
@@ -30,6 +38,7 @@
             });
         };
 
+        // UpdateCell function 
         const updateCell = (index, mark) => {
             if (gameboard[index] === "") {
                 gameboard[index] = mark;
@@ -38,12 +47,22 @@
             return false;
         };
 
+        // GetBoard function with one return line
+        /**
+         * Same as 
+         * const getBoard = () => {
+         *      return gameboard;
+         * }
+         */ 
         const getBoard = () => gameboard;
 
+        // Reset function to empty the gameboard array
         const reset = () => {
             gameboard = ["", "", "", "", "", "", "", "", ""];
         };
 
+        // Since this is an IIFE, you cant access anything inside it from the outside
+        // The return object here allows you to access these functions outside the IIFE
         return {
             render,
             updateCell,
@@ -52,11 +71,12 @@
         };
     })();
 
-    // An IIFE module to control the main game flow.
-    // It handles turns, win conditions, and UI updates.
+    // IIFE
     const gameController = (function() {
+        // Creating two player objects
         const playerX = Player("Player X", "X");
         const playerO = Player("Player O", "O");
+        // Sets status elements of the game
         let currentPlayer = playerX;
         let gameOver = false;
         const statusMessage = document.getElementById("status-message");
@@ -67,11 +87,18 @@
             [0, 4, 8], [2, 4, 6]             // Diagonals
         ];
 
+        // Handles cell click function
+        // (e) is the event object passed by the event listener
         const handleCellClick = (e) => {
             if (gameOver) return;
 
+            // e.target is the clicked element
+            // .dataset.index gets the data-index attribute of the clicked element, same as grabbing a class or 
+            // id attribute 
             const index = e.target.dataset.index;
+            // Sets the player mark in the clicked cell if it's empty
             if (gameboardModule.updateCell(index, currentPlayer.mark)) {
+                // Re-render the gameboard to show the updated mark
                 gameboardModule.render();
                 
                 if (checkForWin()) {
@@ -87,13 +114,22 @@
         };
 
         const switchTurn = () => {
+            // Ternary operator: Consise if/else statement  
+            // currentPlayer === playerX: Checks if currentPlayer is playerX
+            // playerO is returned if true 
+            // playerX is returned if false
             currentPlayer = currentPlayer === playerX ? playerO : playerX;
             statusMessage.textContent = `${currentPlayer.name}'s turn`;
         };
 
         const checkForWin = () => {
+            // Gets the gameboard array with the current marks place
             const board = gameboardModule.getBoard();
+            // .some() method checks if at least one element in the array passes the test implemented 
+            // by the provided function
             return winningCombinations.some(combination => {
+                // .every() method checks if all elements in the array pass the test implemented by the
+                // provided function
                 return combination.every(index => board[index] === currentPlayer.mark);
             });
         };
@@ -116,18 +152,15 @@
             document.getElementById("restart-btn").addEventListener("click", restartGame);
         };
 
-        // The init function is called at the very beginning to start the game.
         const init = () => {
             gameboardModule.render();
             setupEventListeners();
         };
 
-        // The return statement exposes the `init` function to the outside world.
         return {
             init
         };
     })();
 
-    // Start the game by calling the exposed `init` function.
     gameController.init();
 })();
